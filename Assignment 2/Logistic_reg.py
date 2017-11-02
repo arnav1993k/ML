@@ -19,13 +19,13 @@ class Logistic_Regression(object):
 	def gradient(self,X,y):
 		err=self.cost(X,y)
 		gradient=np.dot(X.T,err)
-		self.theta+=self.alpha*gradient
+		self.theta+=self.alpha*gradient+2*0.001*self.theta
 		# print(self.theta)
-	def fit(self,X,y):
+	def fit(self,X,y,e):
 		i=0
 		error_rate=[]
 		total_error=1
-		while(i<3000):
+		while(total_error>e):
 			self.gradient(X,y)
 			err=self.cost(X,y)
 			i+=1
@@ -55,7 +55,7 @@ def __main__():
 	X_test=np.concatenate((o_test,X_test),axis=1)
 	#Declare new perceptron
 	p1=Logistic_Regression(35,1)
-	iterations,error_rate1=p1.fit(X_train,y_train)
+	iterations,error_rate1=p1.fit(X_train,y_train,0.00)
 	print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate1[-1][1]))
 	print("Testing error is "+str(p1.find_error(X_test,y_test)))
 	plt.plot(error_rate1[:,0],error_rate1[:,1],label="Non normalized")
@@ -64,7 +64,7 @@ def __main__():
 	p2=Logistic_Regression(35,1)
 	X_norm1_train=Utilities.norm(X_train,1)
 	X_norm1_test=Utilities.norm(X_test,1)
-	iterations,error_rate2=p2.fit(X_norm1_train,y_train)
+	iterations,error_rate2=p2.fit(X_norm1_train,y_train,0.0)
 	print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate2[-1][1]))
 	print("Testing error is "+str(p2.find_error(X_norm1_test,y_test)))
 	plt.plot(error_rate2[:,0],error_rate2[:,1],label="1D Norm")
@@ -73,7 +73,7 @@ def __main__():
 	p3=Logistic_Regression(35,1)
 	X_norm2_train=Utilities.norm(X_train,2)
 	X_norm2_test=Utilities.norm(X_test,2)
-	iterations,error_rate3=p3.fit(X_norm2_train,y_train)
+	iterations,error_rate3=p3.fit(X_norm2_train,y_train,0.0)
 	print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate3[-1][1]))
 	print("Testing error is "+str(p3.find_error(X_norm2_test,y_test)))
 	plt.plot(error_rate3[:,0],error_rate3[:,1],label="2D Norm")
