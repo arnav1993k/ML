@@ -9,25 +9,26 @@ class Logistic_Regression(object):
 	def __init__(self,w,alpha):
 		self.theta=np.zeros(w)
 		self.alpha=alpha
-	def cost(self,X,y):
+	def cost(self,X,y,mode="normal"):
 		p=np.dot(X,self.theta)
 		z=Utilities.sigmoid(p)
-		z[z>=0.5]=1
-		z[z<0.5]=0
+		if mode=="discrete":
+			z[z>=0.5]=1
+			z[z<0.5]=0
 		err=y-z
 		return err
 	def gradient(self,X,y):
 		err=self.cost(X,y)
 		gradient=np.dot(X.T,err)
-		self.theta+=self.alpha*gradient+2*0.001*self.theta
+		self.theta+=self.alpha*gradient
 		# print(self.theta)
 	def fit(self,X,y,e):
 		i=0
 		error_rate=[]
 		total_error=1
-		while(total_error>e):
+		while(total_error>e and i<10000):
 			self.gradient(X,y)
-			err=self.cost(X,y)
+			err=self.cost(X,y,"discrete")
 			i+=1
 			total_error=(np.sum(np.absolute(err))/len(y))
 			error_rate+=[[i,total_error]]
@@ -55,7 +56,7 @@ def __main__():
 	X_test=np.concatenate((o_test,X_test),axis=1)
 	#Declare new perceptron
 	p1=Logistic_Regression(35,1)
-	iterations,error_rate1=p1.fit(X_train,y_train,0.00)
+	iterations,error_rate1=p1.fit(X_train,y_train,0)
 	print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate1[-1][1]))
 	print("Testing error is "+str(p1.find_error(X_test,y_test)))
 	plt.plot(error_rate1[:,0],error_rate1[:,1],label="Non normalized")
