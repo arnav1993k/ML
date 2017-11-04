@@ -15,7 +15,8 @@ class Perceptron:
 		error_rate=[]
 		cached_weights=self.weights
 		counter=1
-		while(err>e):
+		first=0
+		while(j<2000):
 			err=0
 			for i in range(len(X)):
 				p=np.dot(X[i],self.weights).ravel()
@@ -28,21 +29,14 @@ class Perceptron:
 					err+=1
 					self.weights=self.weights+self.alpha*d
 					cached_weights=cached_weights+self.alpha*d*counter
-					# counter=1
-					# r=input("Enter")
-					# print(d,y[i],z)
-				# err+=math.fabs(y[i]-z)
-				#print(err)
-				# print(p,self.weights,z)
-				# print(d)
-				# print(math.fabs(y[i]-z),y[i],z,i,j,err,len(d))
-				# r=input("Enter")
 				counter+=1
-			# err=err/len(y)
 			j+=1
 			error_rate+=[[j,err]]
+			if err==0 and first==0:
+				first=j
 		self.weights-=cached_weights/counter
-		return j,np.array(error_rate)
+
+		return first,np.array(error_rate)
 	def predict(self,X):
 		y=np.matmul(X,self.weights)
 		y[y>=0]=1
@@ -69,7 +63,7 @@ def __main__():
 	iterations,error_rate1=p1.fit(X_train,y_train,0.01)
 	print("Training convergence time is "+str(iterations)+" iterations.")
 	print("Testing error is "+str(p1.find_error(X_test,y_test)))
-	plt.plot(error_rate1[:,0],error_rate1[:,1],label="Non normalized")
+	plt.plot(error_rate1[:,0],error_rate1[:,1],label="Non normalized "+str(iterations)+" iterations")
 	plt.legend()
 	#L1 norm
 	p2=Perceptron(35,1)
@@ -78,7 +72,7 @@ def __main__():
 	iterations,error_rate2=p2.fit(X_norm1_train,y_train,0.01)
 	print("Training convergence time is "+str(iterations)+" iterations.")
 	print("Testing error is "+str(p2.find_error(X_norm1_test,y_test)))
-	plt.plot(error_rate2[:,0],error_rate2[:,1],label="1D Norm")
+	plt.plot(error_rate2[:,0],error_rate2[:,1],label="1D Norm "+str(iterations)+" iterations")
 
 	# #L2 norm
 	p3=Perceptron(35,1)
@@ -87,7 +81,7 @@ def __main__():
 	iterations,error_rate3=p3.fit(X_norm2_train,y_train,0.01)
 	print("Training convergence time is "+str(iterations)+" iterations.")
 	print("Testing error is "+str(p3.find_error(X_norm2_test,y_test)))
-	plt.plot(error_rate3[:,0],error_rate3[:,1],label="2D Norm")
+	plt.plot(error_rate3[:,0],error_rate3[:,1],label="2D Norm "+str(iterations)+" iterations")
 	plt.legend()
 	plt.show()
 if __name__=="__main__":

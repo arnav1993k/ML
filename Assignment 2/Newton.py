@@ -49,11 +49,16 @@ class LW_Logistic_Regression(object):
 		op=[]
 		for x,y_t in zip(x_test,y_test):
 			i=0
-			while(i<100):
+			self.theta=np.zeros(self.theta.shape[0])
+			while(i<200):
 				err=self.cost(X,y)
 				# print(W,err)
 				H=self.getHessian(X,y,x)
 				g=self.getGradient(X,y,x,err)
+				# print (x)
+				# print (i)
+				# print (H)
+				# print (g)
 				h_inv=np.linalg.pinv(H)
 				self.theta-=self.alpha*np.dot(h_inv,g)
 				i+=1
@@ -85,36 +90,45 @@ def __main__():
 	o_test=np.ones((len(y_test),1))
 	X_test=np.concatenate((o_test,X_test),axis=1)
 	#Declare new perceptron
-	p1=LW_Logistic_Regression(34,0.001,5,0.01)
-	err1=p1.fit(X_train,y_train,X_test,y_test)
-	print(err1)
-	# iterations,error_rate1=p1.fit(X_train,y_train)
-	# print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate1[-1][1]))
-	# print("Testing error is "+str(p1.find_error(X_test,y_test)))
-	# plt.plot(error_rate1[:,0],error_rate1[:,1],label="Non normalized")
-	# # plt.legend()
-	#L1 norm
-	p2=LW_Logistic_Regression(34,0.001,0.1,.0001)
-	X_norm1_train=Utilities.norm(X_train,1)
-	X_norm1_test=Utilities.norm(X_test,1)
-	err2=p2.fit(X_norm1_train,y_train,X_norm1_test,y_test)
-	print(err2)
-	# iterations,error_rate2=p2.fit(X_norm1_train,y_train)
-	# print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate2[-1][1]))
-	# print("Testing error is "+str(p2.find_error(X_norm1_test,y_test)))
-	# plt.plot(error_rate2[:,0],error_rate2[:,1],label="1D Norm")
+	tau=[0.01,0.05,0.1,0.5,1,1]
+	plot_vector=[]
+	for t in tau:
+		p1=LW_Logistic_Regression(34,0.001,t,t/100)
+		err1=p1.fit(X_train,y_train,X_test,y_test)
+		# print(err1)
+		# iterations,error_rate1=p1.fit(X_train,y_train)
+		# print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate1[-1][1]))
+		# print("Testing error is "+str(p1.find_error(X_test,y_test)))
+		# plt.plot(error_rate1[:,0],error_rate1[:,1],label="Non normalized")
+		# # plt.legend()
+		#L1 norm
+		p2=LW_Logistic_Regression(34,0.001,t,0.01)
+		X_norm1_train=Utilities.norm(X_train,1)
+		X_norm1_test=Utilities.norm(X_test,1)
+		err2=p2.fit(X_norm1_train,y_train,X_norm1_test,y_test)
+		# print(err2)
+		# iterations,error_rate2=p2.fit(X_norm1_train,y_train)
+		# print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate2[-1][1]))
+		# print("Testing error is "+str(p2.find_error(X_norm1_test,y_test)))
+		# plt.plot(error_rate2[:,0],error_rate2[:,1],label="1D Norm")
 
-	# # #L2 norm
-	p3=LW_Logistic_Regression(34,0.001,5,0.01)
-	X_norm2_train=Utilities.norm(X_train,2)
-	X_norm2_test=Utilities.norm(X_test,2)
-	err3=p3.fit(X_norm2_train,y_train,X_norm2_test,y_test)
-	print(err3)	
+		# # #L2 norm
+		p3=LW_Logistic_Regression(34,0.001,t,t/100)
+		X_norm2_train=Utilities.norm(X_train,2)
+		X_norm2_test=Utilities.norm(X_test,2)
+		err3=p3.fit(X_norm2_train,y_train,X_norm2_test,y_test)
+		plot_vector+=[t,err1,err2,err3]
 	# iterations,error_rate3=p3.fit(X_norm2_train,y_train)
 	# print("Training convergence time is "+str(iterations)+" iterations with error as "+str(error_rate3[-1][1]))
 	# print("Testing error is "+str(p3.find_error(X_norm2_test,y_test)))
 	# plt.plot(error_rate3[:,0],error_rate3[:,1],label="2D Norm")
 	# plt.legend()
 	# plt.show()
+	plot_vector=np.array(plot_vector)
+	plt.plot(plot_vector[:,0],plot_vector[:,1],label="Non normalaized case")
+	plt.plot(plot_vector[:,0],plot_vector[:,1],label="L1 Norm")
+	plt.plot(plot_vector[:,0],plot_vector[:,1],label="L2 Norm")
+	plt.legend()
+	plt.show()
 if __name__=="__main__":
 	__main__()
